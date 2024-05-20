@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whack-a-Mole</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #242333;
+        color: #fff;
+        font-family: 'Lato', sans-serif;
+        margin: 0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 20px 0;
+      }
+      .scores {
+        display: grid;
+        grid-template-columns: repeat(3, 200px);
+        align-items: center;
+        justify-items: center;
+      }
+      .game-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .mole {
+        width: 100px;
+        height: 100px;
+        background-color: #ccc;
+        cursor: pointer;
+        border: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .active {
+        background: url('https://www.kindpng.com/picc/m/659-6596677_whack-a-mole-mole-hd-png-download.png')
+          no-repeat center center;
+        background-size: cover;
+      }
+      #startButton {
+        display: block;
+        width: 150px;
+        padding: 10px;
+        font-size: 20px;
+        background-color: #fff;
+        border: #ccc 1px solid;
+        border-radius: 5px;
+        text-transform: uppercase;
+      }
+      #startButton:hover {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Whack-a-Mole!</h1>
+      <div class="scores">
+        <h2>Score: <span id="score">0</span></h2>
+        <h2>Best Score: <span id="best-score">0</span></h2>
+        <h2>Time Left: <span id="time-left">10</span>s</h2>
+      </div>
+      <button id="startButton">Start Game</button>
+      <div class="game-grid">
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+        <div class="mole"></div>
+      </div>
+    </div>
+
+    <script>
+      const moles = document.querySelectorAll('.mole');
+      const scoreDisplay = document.getElementById('score');
+      const bestScoreDisplay = document.getElementById('best-score');
+      const timeLeftDisplay = document.getElementById('time-left');
+      const startButton = document.getElementById('startButton');
+      let lastMole;
+      let timeUp = true; // Assume game is not running at start
+      let score = 0;
+      let bestScore = 0;
+      let gameTime = 10;
+      let timerId = null;
+
+      function randomTime(min, max) {
+        return Math.round(Math.random() * (max - min) + min);
+      }
+
+      function randomMole(moles) {
+        const idx = Math.floor(Math.random() * moles.length);
+        const mole = moles[idx];
+        if (mole === lastMole) {
+          return randomMole(moles);
+        }
+        lastMole = mole;
+        return mole;
+      }
+
+      function peep() {
+        if (!timeUp) {
+          const time = randomTime(200, 1000);
+          const mole = randomMole(moles);
+          mole.classList.add('active');
+          setTimeout(() => {
+            mole.classList.remove('active');
+            if (!timeUp) peep();
+          }, time);
+        }
+      }
+
+      function hideButton() {}
+
+      function startGame() {
+        // hide start button
+        startButton.style.visibility = 'hidden';
+        if (timeUp) {
+          // Only start a new game if the previous game has ended
+          score = 0;
+          gameTime = 10;
+          timeUp = false;
+          scoreDisplay.textContent = score;
+          timeLeftDisplay.textContent = gameTime;
+          clearInterval(timerId);
+          peep();
+          timerId = setInterval(() => {
+            gameTime--;
+            timeLeftDisplay.textContent = gameTime;
+            if (gameTime <= 0) {
+              clearInterval(timerId);
+              timeUp = true;
+              if (score > bestScore) {
+                bestScore = score;
+                bestScoreDisplay.textContent = bestScore;
+              }
+              // show start button
+              startButton.style.visibility = 'visible';
+              alert('Game over! Your score: ' + score);
+            }
+          }, 1000);
+        }
+      }
+
+      function whack(e) {
+        if (!e.isTrusted || !this.classList.contains('active')) return; // Cheater!
+        score++;
+        this.classList.remove('active');
+        scoreDisplay.textContent = score;
+      }
+
+      moles.forEach((mole) => mole.addEventListener('click', whack));
+      startButton.addEventListener('click', startGame);
+    </script>
+  </body>
+</html>
