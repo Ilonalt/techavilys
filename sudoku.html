@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sudoku Game with Generator</title>
+    <style>
+      input {
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        font-size: 20px;
+        margin: 2px;
+        border: 1px solid #ddd; /* Lighter border for normal cells */
+      }
+      table {
+        border-collapse: collapse;
+      }
+      td {
+        border: 1px solid #ddd;
+      }
+      .thickBorderRight {
+        border-right: 3px solid #000; /* Thick border on the right */
+      }
+      .thickBorderBottom {
+        border-bottom: 3px solid #000; /* Thick border at the bottom */
+      }
+    </style>
+  </head>
+  <body>
+    <button onclick="startGame()">Start Game</button>
+    <table>
+      <tbody>
+        <!-- Generate 9x9 Sudoku grid -->
+        <script>
+          for (let row = 0; row < 9; row++) {
+            document.write('<tr>');
+            for (let col = 0; col < 9; col++) {
+              let cellId = 'cell-' + row + '-' + col;
+              let borderClasses = '';
+              if (col % 3 === 2 && col !== 8)
+                borderClasses += 'thickBorderRight ';
+              if (row % 3 === 2 && row !== 8)
+                borderClasses += 'thickBorderBottom';
+              document.write('<td class="' + borderClasses + '">');
+              document.write(
+                '<input type="text" id="' +
+                  cellId +
+                  '" maxlength="1" onkeypress="return /[1-9]/.test(event.key)"/>'
+              );
+              document.write('</td>');
+            }
+            document.write('</tr>');
+          }
+        </script>
+      </tbody>
+    </table>
+    <button onclick="checkSudoku()">Check Solution</button>
+    <script>
+      function startGame() {
+        clearGrid();
+        generatePuzzle();
+      }
+
+      function clearGrid() {
+        for (let row = 0; row < 9; row++) {
+          for (let col = 0; col < 9; col++) {
+            let cell = document.getElementById('cell-' + row + '-' + col);
+            cell.value = '';
+          }
+        }
+      }
+
+      function generatePuzzle() {
+        let filledCells = 25;
+        while (filledCells > 0) {
+          let row = Math.floor(Math.random() * 9);
+          let col = Math.floor(Math.random() * 9);
+          let num = Math.floor(Math.random() * 9) + 1;
+          let cell = document.getElementById('cell-' + row + '-' + col);
+          if (cell.value === '') {
+            cell.value = num;
+            filledCells--;
+          }
+        }
+      }
+
+      function checkSudoku() {
+        let valid = true;
+        const size = 9;
+        let rows = new Array(size);
+        let cols = new Array(size);
+
+        for (let i = 0; i < size; i++) {
+          rows[i] = new Set();
+          cols[i] = new Set();
+        }
+
+        for (let row = 0; row < size; row++) {
+          for (let col = 0; col < size; col++) {
+            let cell = document.getElementById('cell-' + row + '-' + col);
+            let num = cell.value;
+            if (num) {
+              if (rows[row].has(num) || cols[col].has(num)) {
+                valid = false;
+              }
+              rows[row].add(num);
+              cols[col].add(num);
+            }
+          }
+        }
+
+        alert(
+          valid
+            ? 'Congratulations! Your solution is correct!'
+            : 'Incorrect solution, please try again.'
+        );
+      }
+    </script>
+  </body>
+</html>

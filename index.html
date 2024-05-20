@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechHive</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Import Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Merienda+One&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #f1f1f1;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        TECHNOLOGIJŲ AVILYS <br />Dideli darbai prasideda nuo mažų, o maži
+        pavirsta dideliais
+      </h1>
+      <img
+        id="musicToggle"
+        class="sound-icon"
+        src="sound_on.png"
+        alt="Toggle Sound"
+        style="cursor: pointer; width: 50px"
+      />
+      <img
+        src="bee1.png"
+        alt="Flying Bee"
+        id="flyingBee"
+        style="position: fixed; width: 50px; top: 0; left: 0"
+      />
+      <input
+        type="range"
+        id="volumeControl"
+        min="0"
+        max="1"
+        step="0.01"
+        value="0.5"
+        style="vertical-align: middle"
+      />
+    </div>
+    <div class="game-list">
+      <a
+        href="https://www.canva.com/design/DAEZHHvGwGc/tefaXlRbLxegSwTLQYfEVw/edit"
+        class="game-link"
+        >STEAM PROJEKTAI</a
+      >
+      <a href="https://scratch.mit.edu/projects/641479991/" class="game-link"
+        >PRADINUKAI PROGRAMUOJA</a
+      >
+      <a href="form.html" class="game-link">SUSISIEKIME</a>
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="game-link">PROTO MANKŠTA</a>
+        <div class="dropdown-content">
+          <a href="whack-a-mole.html">Pagauk kurmį</a>
+          <a href="hangman.html">Kartuvės</a>
+          <a href="calculator.html">Skaičiuotuvas</a>
+          <a href="sudoku.html">Sudoku</a>
+        </div>
+      </div>
+      <a href="Renginiai.html" class="game-link">RENGINIAI</a>
+      <a href="list.html" class="game-link">ATSILIEPIMAI</a>
+    </div>
+    <audio id="bgMusic" src="healing-forest.mp3" loop autoplay></audio>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const bgMusic = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+        const volumeControl = document.getElementById('volumeControl');
+
+        bgMusic.volume = volumeControl.value; // Set initial volume based on slider position
+
+        musicToggle.addEventListener('click', function () {
+          if (!bgMusic.paused) {
+            bgMusic.pause();
+            this.src = 'sound_off.png'; // Update this to your muted speaker icon path
+          } else {
+            bgMusic.play();
+            this.src = 'sound_on.png'; // Update this to your speaker icon path
+          }
+        });
+
+        volumeControl.addEventListener('input', function () {
+          bgMusic.volume = this.value;
+        });
+
+        const flyingBee = document.getElementById('flyingBee');
+        let directionX = 1;
+        let directionY = 1;
+
+        function moveBee() {
+          let x = flyingBee.offsetLeft;
+          let y = flyingBee.offsetTop;
+          const screenHeight = window.innerHeight;
+          const screenWidth = window.innerWidth;
+
+          // Reduce the step size for smoother and slower movement
+          const stepSizeX = Math.random() * 20 - 10; // Smaller range for slower movement
+          const stepSizeY = Math.random() * 20 - 10; // Smaller range for slower movement
+
+          // Update position based on direction
+          x += stepSizeX * directionX;
+          y += stepSizeY * directionY;
+
+          // Boundary checks
+          if (x < 0 || x > screenWidth - 50) {
+            // 50 is the width of the bee
+            directionX *= -1;
+            x = Math.max(0, Math.min(x, screenWidth - 50));
+          }
+          if (y < 0 || y > screenHeight - 50) {
+            // 50 is the height of the bee
+            directionY *= -1;
+            y = Math.max(0, Math.min(y, screenHeight - 50));
+          }
+
+          flyingBee.style.left = `${x}px`;
+          flyingBee.style.top = `${y}px`;
+
+          // Adjust the frame rate by using setTimeout instead of requestAnimationFrame for slower updates
+          setTimeout(moveBee, 50); // Adjust time for slower movement (100 ms between frames)
+        }
+
+        moveBee();
+      });
+    </script>
+  </body>
+</html>

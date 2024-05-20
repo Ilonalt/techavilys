@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Registracija į konferenciją</title>
+<style> 
+body {
+    font-family: Arial, sans-serif;
+}
+
+label, input, select, button {
+    display: block;
+    margin-bottom: 10px;
+    width: 300px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+#occupationField {
+    transition: all 0.3s ease;
+}
+
+.last-entry td {
+    font-weight: bold; 
+}
+
+</style>
+</head>
+<body>
+    <h1>Registracijos į konferenciją forma</h1>
+    <form id="registrationForm">
+        <label for="name">Vardas Pavardė: *</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">El. paštas: *</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="session">Konferencijos sesija: *</label>
+        <select id="session" name="session" required onchange="toggleJobTitleField(this.value)">
+            <option value="">Please select</option>
+            <option value="session1">Sessija 1</option>
+            <option value="session2">Sessija 2</option>
+            <option value="session3">Spec. Sesija</option>
+        </select>
+
+        
+        <div id="jobTitleField" style="display: none;">
+            <label for="jobTitle">Pareigos: *</label>
+            <input type="text" id="jobTitle" name="jobTitle" required>
+        </div>
+
+        <button type="submit">Registruotis</button>
+    </form>
+
+    <div id="registrationData">
+        
+    </div>
+
+
+
+    <script>
+
+document.getElementById('registrationForm').addEventListener('submit', function(event) {
+    event.preventDefault(); 
+    saveData();
+});
+
+function toggleJobTitleField(sessionValue) {
+    const jobTitleDiv = document.getElementById('jobTitleField');
+    if (sessionValue === 'session3') {
+        jobTitleDiv.style.display = 'block'; 
+        document.getElementById('jobTitle').required = true; 
+    } else {
+        jobTitleDiv.style.display = 'none'; 
+        document.getElementById('jobTitle').required = false; 
+        document.getElementById('jobTitle').value = ''; 
+    }
+}
+
+function saveData() {
+    const form = document.getElementById('registrationForm');
+    const sessionValue = form.session.value;
+
+    
+    if (sessionValue === 'session3' && !form.jobTitle.value) {
+        alert('Please enter your job title for the special session.');
+        return;
+    }
+
+    const data = new FormData(form);
+    const entries = {};
+    data.forEach((value, key) => entries[key] = value);
+
+    
+    const existingEntries = JSON.parse(localStorage.getItem('registrationEntries') || '[]');
+    existingEntries.push(entries);
+    localStorage.setItem('registrationEntries', JSON.stringify(existingEntries));
+
+    displayData();
+}
+
+function displayData() {
+    const dataContainer = document.getElementById('registrationData');
+    const entries = JSON.parse(localStorage.getItem('registrationEntries') || '[]');
+    if (entries.length === 0) return; 
+
+    let html = '<table><tr><th>Name</th><th>Email</th><th>Job Title</th><th>Session</th></tr>';
+    entries.forEach((entry, index) => {
+        let rowClass = (index === entries.length - 1) ? 'class="last-entry"' : ''; 
+        html += `<tr ${rowClass}><td>${entry.name}</td><td>${entry.email}</td><td>${entry.jobTitle || ''}</td><td>${entry.session}</td></tr>`;
+    });
+    html += '</table>';
+    dataContainer.innerHTML = html;
+}
+
+
+</script>
+</body>
+</html>
+

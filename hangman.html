@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hangman Game</title>
+    <style>
+      #wordDisplay,
+      #guessedLetters {
+        font-size: 24px;
+        margin-top: 20px;
+      }
+      #hangmanCanvas {
+        background-color: #f0f0f0;
+        margin-top: 20px;
+      }
+      .letter {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hangman Game</h1>
+    <canvas id="hangmanCanvas" width="200" height="250"></canvas>
+    <div id="wordDisplay"></div>
+    <div id="guessedLetters"></div>
+    <input type="text" id="letterInput" maxlength="1" />
+    <button onclick="guessLetter()">Guess</button>
+
+    <script>
+      const word = 'hangman'.toUpperCase();
+      let guesses = [];
+      let wrongGuesses = 0;
+      const canvas = document.getElementById('hangmanCanvas');
+      const ctx = canvas.getContext('2d');
+
+      function drawHangman(part) {
+        ctx.strokeStyle = '#000';
+        ctx.lineWidth = 2;
+        switch (part) {
+          case 1: // Base
+            ctx.beginPath();
+            ctx.moveTo(30, 225);
+            ctx.lineTo(170, 225);
+            ctx.stroke();
+            break;
+          case 2: // Stand
+            ctx.beginPath();
+            ctx.moveTo(100, 225);
+            ctx.lineTo(100, 25);
+            ctx.stroke();
+            break;
+          case 3: // Top
+            ctx.beginPath();
+            ctx.moveTo(100, 25);
+            ctx.lineTo(150, 25);
+            ctx.lineTo(150, 50);
+            ctx.stroke();
+            break;
+          case 4: // Head
+            ctx.beginPath();
+            ctx.arc(150, 60, 10, 0, Math.PI * 2, true);
+            ctx.stroke();
+            break;
+          case 5: // Body
+            ctx.beginPath();
+            ctx.moveTo(150, 70);
+            ctx.lineTo(150, 130);
+            ctx.stroke();
+            break;
+          case 6: // Arms and Legs
+            ctx.beginPath();
+            ctx.moveTo(150, 80);
+            ctx.lineTo(130, 110);
+            ctx.moveTo(150, 80);
+            ctx.lineTo(170, 110);
+            ctx.moveTo(150, 130);
+            ctx.lineTo(130, 160);
+            ctx.moveTo(150, 130);
+            ctx.lineTo(170, 160);
+            ctx.stroke();
+            break;
+        }
+      }
+
+      function displayWord() {
+        const wordDisplay = document.getElementById('wordDisplay');
+        wordDisplay.innerHTML = '';
+        word.split('').forEach((letter) => {
+          const letterElement = document.createElement('span');
+          letterElement.textContent = guesses.includes(letter) ? letter : '_';
+          letterElement.className = 'letter';
+          wordDisplay.appendChild(letterElement);
+        });
+
+        const guessedLettersDisplay = document.getElementById('guessedLetters');
+        guessedLettersDisplay.textContent =
+          'Guessed Letters: ' + guesses.join(' ');
+
+        // Check for win
+        if (!document.getElementById('wordDisplay').textContent.includes('_')) {
+          alert("Congratulations! You've won!");
+          document.getElementById('letterInput').disabled = true;
+        }
+      }
+
+      function guessLetter() {
+        const letterInput = document.getElementById('letterInput');
+        const guessedLetter = letterInput.value.toUpperCase();
+        letterInput.value = ''; // Clear input field
+
+        if (guessedLetter && !guesses.includes(guessedLetter)) {
+          guesses.push(guessedLetter);
+          if (!word.includes(guessedLetter)) {
+            wrongGuesses++;
+            drawHangman(wrongGuesses);
+            if (wrongGuesses >= 6) {
+              alert('Game over! The word was: ' + word);
+              document.getElementById('letterInput').disabled = true;
+            }
+          }
+          displayWord();
+        }
+      }
+
+      // Clears the canvas and initializes the game
+      function initGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        guesses = [];
+        wrongGuesses = 0;
+        document.getElementById('letterInput').disabled = false;
+        displayWord();
+      }
+
+      initGame();
+    </script>
+  </body>
+</html>

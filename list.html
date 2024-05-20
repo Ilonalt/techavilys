@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mums svarbi Jūsų nuomonė</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+	background: url("TechHive copy.png");no-repeat center center fixed;
+  	background-size: cover;
+      }
+      #listDisplay {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+      }
+      input[type='text'] {
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    	<h1>
+	<i>MUMS SVARBI JŪSŲ NUOMONĖ</i>
+	</h1>
+    <input type="text" id="itemInput" placeholder="Add an item" />
+    <button onclick="addItem()">Skelbti</button>
+    <button onclick="removeItem()">Ištrinti paskutinį įrašą</button>
+    
+    <div id="listDisplay"></div>
+
+    <script>
+      let itemList = [];
+
+      function addItem() {
+        const input = document.getElementById('itemInput');
+        if (input.value.trim() !== '') {
+          //The trim() method of String values removes whitespace from both ends
+          // of this string and returns a new string, without modifying the original string.
+          itemList.push(input.value.trim());
+          input.value = ''; // clear input field
+          displayList();
+        }
+      }
+
+      function removeItem() {
+        itemList.pop(); // remove the last item
+        displayList();
+      }
+
+      function reverseList() {
+        itemList.reverse(); // reverse the order of the list
+        displayList();
+      }
+
+      function sortList() {
+        itemList.sort(); // sort the list alphabetically
+        displayList();
+      }
+
+      //The map() method creates a new array by applying a function to every element of the original array. - https://www.w3schools.com/jsref/jsref_map.asp
+      //The join() method combines all elements of an array into a single string, separated by a specified separator string. - https://www.w3schools.com/jsref/jsref_join.asp
+      //Arrow function - https://www.w3schools.com/js/js_arrow_function.asp
+      function displayList() {
+        const display = document.getElementById('listDisplay');
+        display.innerHTML =
+          '<ul>' +
+          itemList.map((item) => `<li>${item}</li>`).join('') +
+          '</ul>';
+      }
+    </script>
+  </body>
+</html>
